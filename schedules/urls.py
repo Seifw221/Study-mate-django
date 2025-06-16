@@ -1,0 +1,9 @@
+# schedules/urls.py
+
+from django.urls import path
+from .views import ScheduleListCreateAPIView, ScheduleByStageAndTypeAPIView
+
+urlpatterns = [
+    path('schedules/', ScheduleListCreateAPIView.as_view(), name='schedule-list-create'),
+    path('schedules/<int:stage>/<str:schedule_type>/', ScheduleByStageAndTypeAPIView.as_view(), name='schedule-by-stage-type'),
+]
