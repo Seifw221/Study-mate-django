@@ -1,1 +1,1 @@
-web: gunicorn study_mate.wsgi --log-file -
+web: gunicorn project.wsgi --log-file -
