@@ -1,1 +1,1 @@
-web: gunicorn project.wsgi:application --timeout 120
+web: gunicorn study_mate.wsgi --log-file -
