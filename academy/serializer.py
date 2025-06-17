@@ -1,18 +1,13 @@
 from rest_framework import serializers
 from .models import Course, CoursePDF
 
-class CoursePDFSerializer(serializers.ModelSerializer):
-    pdf_file = serializers.SerializerMethodField()
 
-    def get_pdf_file(self, obj):
-        request = self.context.get('request')
-        if request is not None:
-            return request.build_absolute_uri(obj.pdf_file.url)
-        return obj.pdf_file.url
+class CoursePDFSerializer(serializers.ModelSerializer):
+    pdf_file = serializers.FileField(use_url=True)
 
     class Meta:
         model = CoursePDF
-        fields = ['id', 'course', 'pdf_file']  # نخلي course يظهر في حالة الاستخدام المباشر
+        fields = ['id', 'course', 'pdf_file']
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -20,4 +15,4 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ['id', 'name', 'doctor', 'department', 'credit_hours', 'pdfs','students','course_description']
+        fields = ['id', 'name', 'doctor', 'department', 'credit_hours', 'pdfs', 'students', 'course_description']

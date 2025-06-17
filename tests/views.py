@@ -8,8 +8,8 @@ from project.shortcuts import IsAuth, has_permission
 
 
 class TestListCreateAPIView(APIView):
-    def get(self, request):
-        tests = Test.objects.all()
+    def get(self, request , test_id):
+        tests = Test.objects.filter(id=test_id)
         serializer = TestSerializer(tests, many=True, context={'request': request})
         return Response(serializer.data)
 

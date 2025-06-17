@@ -4,7 +4,6 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.utils.timezone import now
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from .models import StudentInfo
 
 User = get_user_model()
 
@@ -13,7 +12,16 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['id', 'email', 'username', 'password', 'repeat_password']
+        fields = [
+            'email',
+            'username',
+            'is_active',
+            'full_name',
+            'department',
+            'academic_year',
+            'password',
+            'repeat_password',]      
+        
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -46,8 +54,3 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         return token
 
 
-
-class StudentInfoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = StudentInfo
-        fields = ['full_name', 'department', 'academic_year']

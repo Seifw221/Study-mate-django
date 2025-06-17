@@ -67,7 +67,7 @@ class CourseDetailAPIView(APIView):
 
 class CoursePDFListCreateAPIView(APIView):
     parser_classes = (MultiPartParser, FormParser)  # For file upload
-
+   
     def get(self, request, course_id):
         pdfs = CoursePDF.objects.filter(course__id=course_id)
         serializer = CoursePDFSerializer(pdfs, many=True, context={'request': request})
@@ -85,8 +85,9 @@ class CoursePDFListCreateAPIView(APIView):
             data = {'course': course_id, 'pdf_file': f}
             serializer = CoursePDFSerializer(data=data, context={'request': request})
             if serializer.is_valid():
-                serializer.save()
-                created_pdfs.append(serializer.data)
+             pdf_instance = serializer.save()
+             created_pdfs.append(CoursePDFSerializer(pdf_instance, context={'request': request}).data)  
+   
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

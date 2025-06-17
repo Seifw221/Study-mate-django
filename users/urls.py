@@ -1,16 +1,14 @@
 from django.urls import path
-from .views import RegisterUserView
+from .views import RegisterUserAPIView  , UserProfileAPIView
 from users import views
-from .views import get_student_info
 
 
 
 urlpatterns = [
     path('token/', views.CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('user/register/', RegisterUserView.as_view(), name='register-user'),
-    path('user/update/<int:user_id>/', RegisterUserView.as_view(), name='user-update'),
-    path('user/<int:user_id>/', RegisterUserView.as_view(), name='user-info'),
-    path('student-info/', get_student_info, name='student_info')
-]
+    path('students/', RegisterUserAPIView.as_view(), name='student_list_create'),  # POST + GET
+    path('students/<int:user_id>/', UserProfileAPIView.as_view(), name='student_update'),  # GET + PATCH
 
+
+]
 
