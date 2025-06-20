@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'academy',
     'schedules',
     'tests',
+    'corsheaders',
+
 ]
 
 MIDDLEWARE = [
@@ -62,7 +64,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
+
+# للسماح لكل الـ origins (للتطوير فقط - غير آمن للإنتاج)
+CORS_ALLOW_ALL_ORIGINS = True
+
 
 ROOT_URLCONF = 'project.urls'
 
