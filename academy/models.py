@@ -1,6 +1,4 @@
-from django.db import models
-
-# Create your models here.
+# courses/models.py
 from django.db import models
 
 class Course(models.Model):
@@ -10,11 +8,10 @@ class Course(models.Model):
     credit_hours = models.IntegerField()
     students = models.IntegerField(null=True, blank=True)
     course_description = models.TextField()
-
+    image_url = models.URLField(max_length=500, blank=True, null=True) # <--- أضف هذا الحقل
 
     def __str__(self):
         return self.name
-
 
 class CoursePDF(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='pdfs')
