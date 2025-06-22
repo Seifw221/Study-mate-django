@@ -1,40 +1,42 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
+# tests/views.py (معدل)
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser # ممكن تستخدمهم
 from .models import Test
 from .serializer import TestSerializer
-from django.shortcuts import get_object_or_404
-from project.shortcuts import IsAuth, has_permission
+from project.shortcuts import IsAuth, has_permission # استخدام الـ shortcuts بتاعتك
 
+# View لجلب كل الـ tests أو إنشاء test جديد
+class TestListCreateAPIView(ListCreateAPIView):
+    queryset = Test.objects.all()
+    serializer_class = TestSerializer
+    # permission_classes = [IsAuthenticatedOrReadOnly] # مثال على الصلاحيات
 
-class TestListCreateAPIView(APIView):
-    def get(self, request , test_id):
-        tests = Test.objects.filter(id=test_id)
-        serializer = TestSerializer(tests, many=True, context={'request': request})
-        return Response(serializer.data)
+    def get_queryset(self):
+        # هنا ممكن تضيف فلترة لو عايز تجيب tests لكورس معين أو user معين
+        # مثلاً لو عايز تجيب tests لكورس معين:
+        # course_id = self.request.query_params.get('course_id')
+        # if course_id:
+        #     return Test.objects.filter(course_id=course_id)
+        return Test.objects.all()
 
-    def post(self, request):
-        if not IsAuth(request):
-            return Response({"detail": "Authentication required"}, status=401)
-        if not has_permission("academy.change_course", request):
-            return Response({"detail": "Permission denied"}, status=403)
-        serializer = TestSerializer(data=request.data, context={'request': request})
-        if serializer.is_valid():
-            test = serializer.save()
-            return Response(TestSerializer(test, context={'request': request}).data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def perform_create(self, serializer):
+        # هنا بتضيف الـ permission check اللي عندك
+        if not IsAuth(self.request) or not has_permission("academy.change_course", self.request):
+            raise PermissionDenied("Authentication or permission denied")
+        serializer.save()
 
-    def patch(self, request):
-        if not IsAuth(request):
-            return Response({"detail": "Authentication required"}, status=401)
-        if not has_permission("academy.change_course", request):
-            return Response({"detail": "Permission denied"}, status=403)
-        test_id = request.data.get('id')
-        if not test_id:
-            return Response({"detail": "Test ID is required for patch."}, status=400)
-        test = get_object_or_404(Test, id=test_id)
-        serializer = TestSerializer(test, data=request.data, partial=True, context={'request': request})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=400)
+# View لجلب test واحد، تحديثه، أو حذفه
+class TestDetailAPIView(RetrieveUpdateDestroyAPIView):
+    queryset = Test.objects.all()
+    serializer_class = TestSerializer
+    lookup_field = 'pk' # عشان تستخدم الـ ID في الـ URL زي /api/tests/1/
+
+    def perform_update(self, serializer):
+        if not IsAuth(self.request) or not has_permission("academy.change_course", self.request):
+            raise PermissionDenied("Authentication or permission denied")
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        if not IsAuth(self.request) or not has_permission("academy.change_course", self.request):
+            raise PermissionDenied("Authentication or permission denied")
+        instance.delete()
