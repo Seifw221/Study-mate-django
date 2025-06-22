@@ -3,7 +3,7 @@ from .models import Course, CoursePDF
 
 
 class CoursePDFSerializer(serializers.ModelSerializer):
-    pdf_file = serializers.FileField(use_url=True)
+    pdf_file = serializers.FileField(use_url=True, required=False)
 
     class Meta:
         model = CoursePDF

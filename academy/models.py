@@ -1,5 +1,7 @@
 # courses/models.py
 from django.db import models
+from cloudinary_storage.storage import MediaCloudinaryStorage
+from cloudinary.models import CloudinaryField
 
 class Course(models.Model):
     name = models.CharField(max_length=255)
@@ -15,7 +17,11 @@ class Course(models.Model):
 
 class CoursePDF(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='pdfs')
-    pdf_file = models.FileField(upload_to='course_pdfs/')
+    pdf_file = CloudinaryField(
+        resource_type='raw', 
+        folder='damanhour/Staff/pdfs',
+        blank=True, null=True
+        )
 
     def __str__(self):
         return f"{self.course.name} PDF"
