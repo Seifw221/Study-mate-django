@@ -15,4 +15,4 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ['id', 'name', 'doctor', 'department', 'credit_hours', 'pdfs', 'students', 'course_description']
+        fields = ['id', 'name', 'doctor', 'department', 'credit_hours', 'pdfs', 'students', 'course_description', 'image_url'] # <--- هذا هو الحقل الناقص الذي يجب إضافته
