@@ -1,16 +1,16 @@
 # schedules/views.py
+
 from django.shortcuts import render
-from project.shortcuts import IsAuth, has_permission
+from project.shortcuts import IsAuth, has_permission # تأكد أن هذا المسار صحيح
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Schedule # تأكد أن هذا هو المودل الخاص بك
+from .models import Schedule
 from .serializer import ScheduleSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 class ScheduleListCreateAPIView(APIView):
-    # يمكنك إضافة permission_classes إذا لزم الأمر
     parser_classes = [MultiPartParser, FormParser]
 
     def get(self, request):
@@ -32,14 +32,21 @@ class ScheduleListCreateAPIView(APIView):
 
 
 class ScheduleByStageAndTypeAPIView(APIView):
-    permission_classes = [AllowAny] # أو [IsAuthenticated] حسب حاجتك
+    permission_classes = [AllowAny]
     
-    def get(self, request, stage, schedule_type): # stage سيأتي كرقم، schedule_type كنص (lecture/exam)
-        # فلترة الجداول بناءً على stage (رقم) و schedule_type (نص)
-        schedules = Schedule.objects.filter(stage=stage, schedule_type=schedule_type)
+    def get(self, request, stage, schedule_type):
+        # ** تعديل الفلترة لتقبل department كـ query parameter **
+        filters = {
+            'stage': stage,
+            'schedule_type': schedule_type,
+        }
         
-        # لا يوجد فلترة بالـ 'department' هنا، لأن الحقل غير موجود في المودل
-        # إذا أردت فلترة بالقسم، يجب إضافة حقل department لنموذج Schedule أولاً
+        # إذا تم تمرير department كـ query parameter (مثلاً: ?department=CS)
+        department = request.query_params.get('department')
+        if department:
+            filters['department'] = department
+        
+        schedules = Schedule.objects.filter(**filters)
         
         serializer = ScheduleSerializer(schedules, many=True, context={'request': request})
         return Response(serializer.data)
