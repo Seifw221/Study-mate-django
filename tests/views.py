@@ -4,6 +4,14 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser # 
 from .models import Test
 from .serializer import TestSerializer
 from project.shortcuts import IsAuth, has_permission # استخدام الـ shortcuts بتاعتك
+from rest_framework.exceptions import PermissionDenied # <--- أضف هذا الاستيراد
+
+
+
+
+
+# ... بقية الـ Views بتاعتك زي ما هي ...
+
 
 # View لجلب كل الـ tests أو إنشاء test جديد
 class TestListCreateAPIView(ListCreateAPIView):
